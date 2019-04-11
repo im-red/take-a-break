@@ -3,14 +3,17 @@
 
 #include <QApplication>
 #include <QScreen>
+#include <QDesktopWidget>
 
 BlackDialog::BlackDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::BlackDialog)
 {
     ui->setupUi(this);
-    setGeometry(QApplication::screens().at(0)->geometry());
-    setWindowFlags(Qt::FramelessWindowHint);
+    setGeometry(QApplication::desktop()->geometry());
+    ui->timeLabel->setGeometry(QApplication::primaryScreen()->geometry());
+    setWindowFlags(Qt::FramelessWindowHint
+                   | Qt::BypassWindowManagerHint);
 }
 
 BlackDialog::~BlackDialog()
@@ -18,7 +21,18 @@ BlackDialog::~BlackDialog()
     delete ui;
 }
 
-void BlackDialog::setLeftTime(QString &str)
+void BlackDialog::setLeftTime(const QString &str)
 {
     ui->timeLabel->setText(str);
+}
+
+void BlackDialog::hideEvent(QHideEvent *e)
+{
+    (void) e;
+    emit hidden();
+}
+
+void BlackDialog::on_exitButton_clicked()
+{
+    hide();
 }

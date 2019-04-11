@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QWindow>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -16,12 +17,12 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
     m_blackDialog = new BlackDialog();
 
-    connect(ui->timeButton, &QPushButton::clicked, this, &Widget::resetTotalTime);
-    connect(m_blackDialog, &BlackDialog::finished, this, &Widget::onBlackDialogDestroyed);
+    connect(ui->timeButton, &QPushButton::clicked, this, &Widget::setNewDuration);
+    connect(m_blackDialog, &BlackDialog::hidden, this, &Widget::onBlackDialogHidden);
 
     createTrayIcon();
     m_zeroTime.setHMS(0, 0, 0);
-    resetTotalTime();
+    setNewDuration();
     startTimer(1000);
 }
 
@@ -38,8 +39,8 @@ void Widget::timerEvent(QTimerEvent *event)
     switch (m_state) {
     case E_INIT:
     {
-        resetTotalTime();
-        resetLeftTime();
+        setNewDuration();
+        resetLeftDuration();
         m_state = E_WORK;
         break;
     }
@@ -47,7 +48,7 @@ void Widget::timerEvent(QTimerEvent *event)
     {
         if (m_leftWork == m_zeroTime)
         {
-            resetLeftTime();
+            resetLeftDuration();
             m_state = E_REST;
         }
         else
@@ -61,7 +62,7 @@ void Widget::timerEvent(QTimerEvent *event)
     {
         if (m_leftRest == m_zeroTime)
         {
-            resetLeftTime();
+            resetLeftDuration();
             m_state = E_WORK;
             leaveRest();
         }
@@ -112,13 +113,14 @@ void Widget::iconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void Widget::resetTotalTime()
+void Widget::setNewDuration()
 {
     m_totalWork.setHMS(ui->workSpinBox->value() / 60, ui->workSpinBox->value() % 60, 0);
     m_totalRest.setHMS(ui->restSpinBox->value() / 60, ui->restSpinBox->value() % 60, 0);
+    resetLeftDuration();
 }
 
-void Widget::resetLeftTime()
+void Widget::resetLeftDuration()
 {
     m_leftWork = m_totalWork;
     m_leftRest = m_totalRest;
@@ -126,13 +128,13 @@ void Widget::resetLeftTime()
 
 void Widget::onRestActionTriggered()
 {
-    resetLeftTime();
+    resetLeftDuration();
     m_state = E_REST;
 }
 
-void Widget::onBlackDialogDestroyed()
+void Widget::onBlackDialogHidden()
 {
-    resetLeftTime();
+    resetLeftDuration();
     m_state = E_WORK;
 }
 
@@ -204,4 +206,5 @@ void Widget::updateToolTip()
     }
 
     m_trayIcon->setToolTip(toolTip);
+    ui->tipLabel->setText(toolTip);
 }
