@@ -182,8 +182,14 @@
      </disabled>
     </palette>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::ClickFocus</enum>
+   </property>
    <property name="text">
     <string>Exit</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
    <property name="flat">
     <bool>false</bool>

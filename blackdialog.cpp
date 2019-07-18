@@ -13,7 +13,8 @@ BlackDialog::BlackDialog(QWidget *parent) :
     setGeometry(QApplication::desktop()->geometry());
     ui->timeLabel->setGeometry(QApplication::primaryScreen()->geometry());
     setWindowFlags(Qt::FramelessWindowHint
-                   | Qt::BypassWindowManagerHint);
+                   | Qt::BypassWindowManagerHint
+                   | Qt::WindowStaysOnTopHint);
 }
 
 BlackDialog::~BlackDialog()
