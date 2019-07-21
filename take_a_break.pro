@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = take-a-break
+TARGET = take_a_break
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -24,17 +24,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        widget.cpp \
-    blackdialog.cpp
+        src/main.cpp \
+        src/widget.cpp \
+        src/blackdialog.cpp
 
 HEADERS += \
-        widget.h \
-    blackdialog.h
+        src/widget.h \
+        src/blackdialog.h
 
 FORMS += \
-        widget.ui \
-    blackdialog.ui
+        src/widget.ui \
+        src/blackdialog.ui
 
 RESOURCES += \
-    res.qrc
+        res/res.qrc
