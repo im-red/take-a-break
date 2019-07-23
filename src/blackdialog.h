@@ -1,5 +1,4 @@
-#ifndef BLACKDIALOG_H
-#define BLACKDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QHideEvent>
@@ -13,8 +12,8 @@ class BlackDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit BlackDialog(QWidget *parent = 0);
-    ~BlackDialog();
+    explicit BlackDialog(QWidget *parent = nullptr);
+    ~BlackDialog() override;
 
     void setLeftTime(const QString &str);
 
@@ -22,7 +21,11 @@ signals:
     void hidden();
 
 protected:
-    void hideEvent(QHideEvent *e) override;
+    bool event(QEvent *e) override;
+    void closeEvent(QCloseEvent *e) override;
+    void showEvent(QShowEvent *) override;
+    void hideEvent(QHideEvent *) override;
+    void keyPressEvent(QKeyEvent *e) override;
 
 private slots:
     void on_exitButton_clicked();
@@ -30,5 +33,3 @@ private slots:
 private:
     Ui::BlackDialog *ui;
 };
-
-#endif // BLACKDIALOG_H

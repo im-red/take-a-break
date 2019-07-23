@@ -4,17 +4,18 @@
 #include <QApplication>
 #include <QScreen>
 #include <QDesktopWidget>
+#include <QDebug>
+#include <QEvent>
 
 BlackDialog::BlackDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::BlackDialog)
 {
     ui->setupUi(this);
-    setGeometry(QApplication::desktop()->geometry());
-    ui->timeLabel->setGeometry(QApplication::primaryScreen()->geometry());
     setWindowFlags(Qt::FramelessWindowHint
                    | Qt::BypassWindowManagerHint
-                   | Qt::WindowStaysOnTopHint);
+                   | Qt::WindowStaysOnTopHint
+                   | Qt::WindowDoesNotAcceptFocus);
 }
 
 BlackDialog::~BlackDialog()
@@ -27,10 +28,31 @@ void BlackDialog::setLeftTime(const QString &str)
     ui->timeLabel->setText(str);
 }
 
-void BlackDialog::hideEvent(QHideEvent *e)
+bool BlackDialog::event(QEvent *e)
 {
-    (void) e;
+    // qDebug() << e;
+    return QDialog::event(e);
+}
+
+void BlackDialog::closeEvent(QCloseEvent *e)
+{
+    e->ignore();
+}
+
+void BlackDialog::showEvent(QShowEvent *)
+{
+    setGeometry(QApplication::desktop()->geometry());
+    ui->timeLabel->setGeometry(QApplication::primaryScreen()->geometry());
+}
+
+void BlackDialog::hideEvent(QHideEvent *)
+{
     emit hidden();
+}
+
+void BlackDialog::keyPressEvent(QKeyEvent *e)
+{
+    e->accept();
 }
 
 void BlackDialog::on_exitButton_clicked()

@@ -1,5 +1,4 @@
-#ifndef WIDGET_H
-#define WIDGET_H
+#pragma once
 
 #include <QWidget>
 #include <QSystemTrayIcon>
@@ -66,5 +65,3 @@ private:
     QMenu *m_trayMenu;
     BlackDialog *m_blackDialog;
 };
-
-#endif // WIDGET_H

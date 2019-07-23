@@ -145,7 +145,7 @@ void Widget::enterRest()
 
 void Widget::leaveRest()
 {
-    m_blackDialog->close();
+    m_blackDialog->hide();
 }
 
 void Widget::createActions()
