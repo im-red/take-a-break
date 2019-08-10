@@ -37,7 +37,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Time set</string>
+        <string>Setting</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -80,32 +80,6 @@
          <widget class="QPushButton" name="timeButton">
           <property name="text">
            <string>Set</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>When close clicked</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QRadioButton" name="minRadioButton">
-          <property name="text">
-           <string>Show minimized</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="closeRadioButton">
-          <property name="text">
-           <string>Quit</string>
           </property>
          </widget>
         </item>

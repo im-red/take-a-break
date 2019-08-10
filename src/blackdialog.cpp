@@ -23,7 +23,7 @@ BlackDialog::~BlackDialog()
     delete ui;
 }
 
-void BlackDialog::setLeftTime(const QString &str)
+void BlackDialog::setRemainingTime(const QString &str)
 {
     ui->timeLabel->setText(str);
 }

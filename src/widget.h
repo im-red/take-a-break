@@ -4,6 +4,8 @@
 #include <QSystemTrayIcon>
 #include <QTime>
 
+#include <memory>
+
 class BlackDialog;
 
 class QTimerEvent;
@@ -20,17 +22,17 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
-    explicit Widget(QWidget *parent = 0);
-    ~Widget();
+    explicit Widget(QWidget *parent = nullptr);
+    ~Widget() override;
 
 protected:
-    void timerEvent(QTimerEvent *event) override;
+    void timerEvent(QTimerEvent *) override;
     void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void setNewDuration();
-    void resetLeftDuration();
+    void resetRemainingDuration();
     void onRestActionTriggered();
     void onBlackDialogHidden();
 
@@ -40,28 +42,28 @@ private:
     void createActions();
     void createTrayIcon();
     void updateToolTip();
-    enum E_State
+    enum State
     {
-        E_INIT,
-        E_WORK,
-        E_REST,
-        E_PAUSE
+        Init,
+        Working,
+        Resting
     };
 
     Ui::Widget *ui;
 
-    E_State m_state;
+    State m_state = Init;
 
     QTime m_totalWork;
     QTime m_totalRest;
-    QTime m_leftWork;
-    QTime m_leftRest;
+    QTime m_remainingWork;
+    QTime m_remainingRest;
     QTime m_zeroTime;
 
-    QAction *m_restAction;
-    QAction *m_openAction;
-    QAction *m_quitAction;
-    QSystemTrayIcon *m_trayIcon;
-    QMenu *m_trayMenu;
-    BlackDialog *m_blackDialog;
+    QAction *m_restAction = nullptr;
+    QAction *m_openAction = nullptr;
+    QAction *m_quitAction = nullptr;
+    QSystemTrayIcon *m_trayIcon = nullptr;
+    QMenu *m_trayMenu = nullptr;
+
+    std::unique_ptr<BlackDialog> m_blackDialog;
 };

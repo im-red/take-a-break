@@ -15,7 +15,7 @@ public:
     explicit BlackDialog(QWidget *parent = nullptr);
     ~BlackDialog() override;
 
-    void setLeftTime(const QString &str);
+    void setRemainingTime(const QString &str);
 
 signals:
     void hidden();

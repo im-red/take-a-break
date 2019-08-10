@@ -12,96 +12,81 @@
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
-    , m_state(E_INIT)
+    , m_state(Init)
 {
     ui->setupUi(this);
-    m_blackDialog = new BlackDialog();
+    m_blackDialog.reset(new BlackDialog());
 
     connect(ui->timeButton, &QPushButton::clicked, this, &Widget::setNewDuration);
-    connect(m_blackDialog, &BlackDialog::hidden, this, &Widget::onBlackDialogHidden);
+    connect(m_blackDialog.get(), &BlackDialog::hidden, this, &Widget::onBlackDialogHidden);
 
     createTrayIcon();
     m_zeroTime.setHMS(0, 0, 0);
-    setNewDuration();
     startTimer(1000);
 }
 
 Widget::~Widget()
 {
     delete ui;
-    delete m_blackDialog;
 }
 
-void Widget::timerEvent(QTimerEvent *event)
+void Widget::timerEvent(QTimerEvent *)
 {
-    Q_UNUSED(event)
-
-    switch (m_state) {
-    case E_INIT:
+    switch (m_state)
+    {
+    case Init:
     {
         setNewDuration();
-        resetLeftDuration();
-        m_state = E_WORK;
+        resetRemainingDuration();
+        m_state = Working;
         break;
     }
-    case E_WORK:
+    case Working:
     {
-        if (m_leftWork == m_zeroTime)
+        if (m_remainingWork == m_zeroTime)
         {
-            resetLeftDuration();
-            m_state = E_REST;
+            resetRemainingDuration();
+            m_state = Resting;
         }
         else
         {
-            m_leftWork = m_leftWork.addSecs(-1);
+            m_remainingWork = m_remainingWork.addSecs(-1);
         }
 
         break;
     }
-    case E_REST:
+    case Resting:
     {
-        if (m_leftRest == m_zeroTime)
+        if (m_remainingRest == m_zeroTime)
         {
-            resetLeftDuration();
-            m_state = E_WORK;
+            resetRemainingDuration();
+            m_state = Working;
             leaveRest();
         }
         else
         {
-            if (m_leftRest == m_totalRest)
+            if (m_remainingRest == m_totalRest)
             {
                 enterRest();
             }
-            m_leftRest = m_leftRest.addSecs(-1);
+            m_remainingRest = m_remainingRest.addSecs(-1);
         }
-    }
-    case E_PAUSE:
-    {
         break;
     }
-    default:
-        break;
     }
     updateToolTip();
 }
 
 void Widget::closeEvent(QCloseEvent *event)
 {
-    if (ui->minRadioButton->isChecked())
-    {
-        hide();
-        event->ignore();
-    }
-    else if (ui->closeRadioButton->isChecked())
-    {
-        qApp->setQuitOnLastWindowClosed(true);
-        event->accept();
-    }
+    hide();
+    event->ignore();
 }
 
 void Widget::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    switch (reason) {
+    switch (reason)
+    {
     case QSystemTrayIcon::Trigger:
     case QSystemTrayIcon::DoubleClick:
     {
@@ -117,25 +102,25 @@ void Widget::setNewDuration()
 {
     m_totalWork.setHMS(ui->workSpinBox->value() / 60, ui->workSpinBox->value() % 60, 0);
     m_totalRest.setHMS(ui->restSpinBox->value() / 60, ui->restSpinBox->value() % 60, 0);
-    resetLeftDuration();
+    resetRemainingDuration();
 }
 
-void Widget::resetLeftDuration()
+void Widget::resetRemainingDuration()
 {
-    m_leftWork = m_totalWork;
-    m_leftRest = m_totalRest;
+    m_remainingWork = m_totalWork;
+    m_remainingRest = m_totalRest;
 }
 
 void Widget::onRestActionTriggered()
 {
-    resetLeftDuration();
-    m_state = E_REST;
+    resetRemainingDuration();
+    m_state = Resting;
 }
 
 void Widget::onBlackDialogHidden()
 {
-    resetLeftDuration();
-    m_state = E_WORK;
+    resetRemainingDuration();
+    m_state = Working;
 }
 
 void Widget::enterRest()
@@ -183,25 +168,24 @@ void Widget::createTrayIcon()
 void Widget::updateToolTip()
 {
     QString toolTip;
-    switch (m_state) {
-    case E_WORK:
+    switch (m_state)
+    {
+    case Working:
     {
         toolTip = "Working ";
-        toolTip += m_leftWork.toString("hh:mm:ss");
+        toolTip += m_remainingWork.toString("hh:mm:ss");
         break;
     }
-    case E_REST:
+    case Resting:
     {
         toolTip = "Resting ";
-        toolTip += m_leftRest.toString("hh:mm:ss");
-        m_blackDialog->setLeftTime(toolTip);
+        toolTip += m_remainingRest.toString("hh:mm:ss");
+        m_blackDialog->setRemainingTime(toolTip);
         break;
     }
-    case E_PAUSE:
     default:
     {
         return;
-        break;
     }
     }
 
